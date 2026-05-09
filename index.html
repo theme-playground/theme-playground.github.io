@@ -32,22 +32,26 @@
   <title>theme_demo</title>
   <link rel="manifest" href="manifest.json">
 
-  <script>
-    // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "38130460" /* Flutter's service worker is deprecated and will be removed in a future Flutter release. */;
-  </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
 </head>
 <body>
   <script>
-    window.addEventListener('load', function(ev) {
+    window.addEventListener('load', async function(ev) {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(function(registration) {
+          return registration.unregister();
+        }));
+      }
+      if ('caches' in window) {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map(function(cacheKey) {
+          return caches.delete(cacheKey);
+        }));
+      }
       // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        }
-      }).then(function(engineInitializer) {
+      _flutter.loader.loadEntrypoint().then(function(engineInitializer) {
         return engineInitializer.initializeEngine();
       }).then(function(appRunner) {
         return appRunner.runApp();
