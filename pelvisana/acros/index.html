@@ -52,7 +52,9 @@
       }
       // Download main.dart.js
       _flutter.loader.loadEntrypoint().then(function(engineInitializer) {
-        return engineInitializer.initializeEngine();
+        return engineInitializer.initializeEngine({
+          initialRoute: window.location.pathname
+        });
       }).then(function(appRunner) {
         return appRunner.runApp();
       });
